@@ -1,45 +1,653 @@
-BK.LOGINS
-LOGIN TOOLKIT SYSTEM
-0
-TOTAL NO BANCO
-0
-NESTA SESSÃO
-0
-EMAILS BASE
-⚡
-Gerador de Aliases
-bk://generate
-EMAIL BASE
-QUANTIDADE
-⚡ EXECUTAR
-✂️
-Tirar Senha dos Emails
-bk://strip · email:senha → email
-COLE A LISTA (EMAIL:SENHA)
-Auto
-Dois pontos (:)
-Barra vertical (|)
-Ponto e vírgula (;)
-Vírgula (,)
-Espaço
-✂️ TIRAR SENHA
-🔑
-Adicionar Senha
-bk://addpass · email → email:senha
-COLE A LISTA DE EMAILS (SEM SENHA)
-SENHA FIXA
-SEPARADOR
-          Dois pontos (email:senha)
-          Barra vertical (email|senha)
-          Ponto e vírgula (email;senha)
-          Vírgula (email,senha)
-          Espaço (email senha)
-        
-🔑 ADICIONAR SENHA
-💾
-Banco de Dados
-bk://database · registros salvos
-// banco vazio
-🗑️ LIMPAR DB 📤 EXPORTAR DB 📋 COPIAR BANCO COMPLETO
-BK.LOGINS · TOOLKIT
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>BK.LOGINS · Toolkit</title>
+<style>
+  :root {
+    --bg: #0a0a14;
+    --surface: #12122a;
+    --surface2: #1a1a38;
+    --surface3: #222250;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --text2: #a0a0c0;
+    --text3: #7070a0;
+    --purple: #a855f7;
+    --purple-glow: rgba(168,85,247,0.35);
+    --cyan: #06b6d4;
+    --cyan-glow: rgba(6,182,212,0.35);
+    --green: #22c55e;
+    --red: #ef4444;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100dvh;
+    padding: 20px 16px 40px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(168,85,247,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 100%, rgba(6,182,212,0.06) 0%, transparent 60%);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header .logo {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header .sub {
+    font-size: 0.85rem;
+    color: var(--text3);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 130px;
+    flex: 1;
+    max-width: 180px;
+  }
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-card .lbl {
+    font-size: 0.72rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  @media (min-width: 640px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .grid .card-full { grid-column: 1 / -1; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card.card-purple::before { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
+  .card.card-cyan::before { background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+  .card.card-green::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+  .card.card-db::before { background: linear-gradient(90deg, var(--purple), var(--green)); }
+
+  .card .icon {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: var(--text);
+  }
+  .card .path {
+    font-size: 0.72rem;
+    color: var(--text3);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-bottom: 14px;
+    word-break: break-all;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 0.92rem;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px var(--purple-glow);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a0a0c0' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 14px;
+  }
+  .pill {
+    padding: 7px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .pill.active {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: #fff;
+    box-shadow: 0 0 12px var(--purple-glow);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 10px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    letter-spacing: 0.3px;
+  }
+  .btn-purple {
+    background: linear-gradient(135deg, var(--purple), #7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 20px var(--purple-glow);
+  }
+  .btn-purple:active { transform: scale(0.97); opacity: 0.9; }
+  .btn-cyan {
+    background: linear-gradient(135deg, var(--cyan), #0891b2);
+    color: #000;
+    box-shadow: 0 4px 20px var(--cyan-glow);
+  }
+  .btn-cyan:active { transform: scale(0.97); opacity: 0.9; }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    box-shadow: none;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    padding: 10px 18px;
+  }
+  .btn-outline:active { background: var(--surface2); }
+  .btn-sm {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    margin-top: 6px;
+  }
+
+  .result-box {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--green);
+    line-height: 1.6;
+    max-height: 180px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: none;
+  }
+  .result-box.show { display: block; }
+  .result-box .copy-btn {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .result-box .copy-btn:active { background: var(--purple); color: #fff; }
+
+  .db-preview {
+    margin-top: 10px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--text3);
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .db-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .db-actions .btn {
+    flex: 1;
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 10px 14px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--surface3);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 999;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    color: var(--text3);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .btn, .pill, .copy-btn { -webkit-tap-highlight-color: transparent; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">BK.LOGINS</div>
+  <div class="sub">Login Toolkit System</div>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="num" id="statTotal">0</div>
+    <div class="lbl">Total no Banco</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" id="statSession">0</div>
+    <div class="lbl">Nesta Sessão</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" id="statBase">0</div>
+    <div class="lbl">Emails Base</div>
+  </div>
+</div>
+
+<div class="grid">
+
+  <div class="card card-purple">
+    <div class="icon">⚡</div>
+    <h2>Gerador de Aliases</h2>
+    <div class="path">bk://generate</div>
+    <div class="row">
+      <div>
+        <label>EMAIL BASE</label>
+        <input type="text" id="aliasEmail" placeholder="ex: joao@gmail.com">
+      </div>
+      <div>
+        <label>QUANTIDADE</label>
+        <input type="number" id="aliasQty" value="5" min="1" max="100">
+      </div>
+    </div>
+    <button class="btn btn-purple" onclick="generateAliases()">⚡ EXECUTAR</button>
+    <div class="result-box" id="aliasResult">
+      <div>RESULTADO DA ÚLTIMA GERAÇÃO:</div>
+      <div id="aliasOutput"></div>
+      <button class="copy-btn" onclick="copyResult('aliasOutput')">📋 COPIAR ALIASES</button>
+    </div>
+  </div>
+
+  <div class="card card-cyan">
+    <div class="icon">✂️</div>
+    <h2>Tirar Senha dos Emails</h2>
+    <div class="path">bk://strip · email:senha → email</div>
+    <label>COLE A LISTA (EMAIL:SENHA)</label>
+    <textarea id="stripInput" placeholder="joao@gmail.com:senha123&#10;maria@outlook.com:outrasenha"></textarea>
+    <div class="pills" id="stripPills">
+      <span class="pill active" data-sep="auto">Auto</span>
+      <span class="pill" data-sep=":">Dois pontos (:)</span>
+      <span class="pill" data-sep="|">Barra vertical (|)</span>
+      <span class="pill" data-sep=";">Ponto e vírgula (;)</span>
+      <span class="pill" data-sep=",">Vírgula (,)</span>
+      <span class="pill" data-sep=" ">Espaço</span>
+    </div>
+    <button class="btn btn-cyan" onclick="stripPasswords()">✂️ TIRAR SENHA</button>
+    <div class="result-box" id="stripResult">
+      <div>RESULTADO DO STRIP:</div>
+      <div id="stripOutput"></div>
+      <button class="copy-btn" onclick="copyResult('stripOutput')">📋 COPIAR EMAILS LIMPOS</button>
+    </div>
+  </div>
+
+  <div class="card card-purple">
+    <div class="icon">🔑</div>
+    <h2>Adicionar Senha</h2>
+    <div class="path">bk://addpass · email → email:senha</div>
+    <label>COLE A LISTA DE EMAILS (SEM SENHA)</label>
+    <textarea id="addpassInput" placeholder="joao@gmail.com&#10;maria@outlook.com"></textarea>
+    <div class="row">
+      <div>
+        <label>SENHA FIXA</label>
+        <input type="text" id="addpassPass" placeholder="senha123">
+      </div>
+      <div>
+        <label>SEPARADOR</label>
+        <select id="addpassSep">
+          <option value=":">Dois pontos (email:senha)</option>
+          <option value="|">Barra vertical (email|senha)</option>
+          <option value=";">Ponto e vírgula (email;senha)</option>
+          <option value=",">Vírgula (email,senha)</option>
+          <option value=" ">Espaço (email senha)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-purple" onclick="addPassword()">🔑 ADICIONAR SENHA</button>
+    <div class="result-box" id="addpassResult">
+      <div>RESULTADO DO ADDPASS:</div>
+      <div id="addpassOutput"></div>
+      <button class="copy-btn" onclick="copyResult('addpassOutput')">📋 COPIAR COMBINAÇÕES</button>
+    </div>
+  </div>
+
+  <div class="card card-db card-full">
+    <div class="icon">💾</div>
+    <h2>Banco de Dados</h2>
+    <div class="path">bk://database · registros salvos</div>
+    <div class="db-preview" id="dbDisplay">// banco vazio</div>
+    <div class="db-actions">
+      <button class="btn btn-outline" onclick="clearDB()">🗑️ LIMPAR DB</button>
+      <button class="btn btn-outline" onclick="exportDB()">📤 EXPORTAR DB</button>
+      <button class="btn btn-outline" onclick="copyDB()">📋 COPIAR BANCO COMPLETO</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">BK.LOGINS · TOOLKIT</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var db = [];
+var sessionCount = 0;
+
+try { var saved = localStorage.getItem('bklogins_db'); if (saved) { db = JSON.parse(saved); updateStats(); } } catch(e) {}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = db.length;
+  document.getElementById('statSession').textContent = sessionCount;
+  document.getElementById('statBase').textContent = db.filter(function(r){ return r.type === 'base'; }).length;
+  renderDB();
+}
+
+function saveDB() {
+  try { localStorage.setItem('bklogins_db', JSON.stringify(db)); } catch(e) {}
+}
+
+function renderDB() {
+  var el = document.getElementById('dbDisplay');
+  if (db.length === 0) { el.textContent = '// banco vazio'; return; }
+  var lines = db.map(function(r, i){
+    return '[' + (i+1) + '] ' + r.data + '  (' + r.type + ')';
+  });
+  el.textContent = lines.join('\n');
+}
+
+function addToDB(data, type) {
+  db.push({ data: data, type: type, time: new Date().toISOString() });
+  sessionCount++;
+  saveDB();
+  updateStats();
+}
+
+function showResult(id, text) {
+  var box = document.getElementById(id + 'Result');
+  var out = document.getElementById(id + 'Output');
+  out.textContent = text;
+  box.classList.add('show');
+}
+
+function copyResult(outputId) {
+  var text = document.getElementById(outputId).textContent;
+  copyToClipboard(text);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function(){ toast('✅ Copiado!'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('✅ Copiado!'); } catch(e) { toast('❌ Erro ao copiar'); }
+    document.body.removeChild(ta);
+  }
+}
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+function parseLines(input) {
+  return input.split(/[\n\r]+/).map(function(l){ return l.trim(); }).filter(Boolean);
+}
+
+function detectSep(line) {
+  if (line.includes(':')) return ':';
+  if (line.includes('|')) return '|';
+  if (line.includes(';')) return ';';
+  if (line.includes(',')) return ',';
+  if (line.includes(' ')) return ' ';
+  return null;
+}
+
+function generateAliases() {
+  var email = document.getElementById('aliasEmail').value.trim();
+  var qty = parseInt(document.getElementById('aliasQty').value) || 5;
+  if (!email) { toast('⚠️ Informe o email base'); return; }
+  if (!email.includes('@')) { toast('⚠️ Email inválido'); return; }
+  qty = Math.max(1, Math.min(100, qty));
+
+  var parts = email.split('@');
+  var user = parts[0];
+  var domain = parts[1];
+
+  var results = [];
+  for (var i = 1; i <= qty; i++) {
+    results.push(user + '+' + i + '@' + domain);
+  }
+
+  var text = results.join('\n');
+  showResult('alias', text);
+  results.forEach(function(r){ addToDB(r, 'alias'); });
+  toast('⚡ ' + qty + ' aliases gerados!');
+}
+
+function stripPasswords() {
+  var input = document.getElementById('stripInput').value.trim();
+  if (!input) { toast('⚠️ Cole a lista primeiro'); return; }
+
+  var activePill = document.querySelector('#stripPills .pill.active');
+  var sepMode = activePill ? activePill.getAttribute('data-sep') : 'auto';
+
+  var lines = parseLines(input);
+  var results = [];
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var sep = sepMode === 'auto' ? detectSep(line) : sepMode;
+    if (sep) {
+      var idx = line.indexOf(sep);
+      results.push(line.substring(0, idx).trim());
+    } else {
+      results.push(line);
+    }
+  }
+
+  var text = results.join('\n');
+  showResult('strip', text);
+  results.forEach(function(r){ addToDB(r, 'email'); });
+  toast('✂️ ' + results.length + ' emails limpos!');
+}
+
+function addPassword() {
+  var input = document.getElementById('addpassInput').value.trim();
+  var pass = document.getElementById('addpassPass').value.trim();
+  var sep = document.getElementById('addpassSep').value;
+  if (!input) { toast('⚠️ Cole a lista de emails'); return; }
+  if (!pass) { toast('⚠️ Informe a senha'); return; }
+
+  var lines = parseLines(input);
+  var results = lines.map(function(line){ return line + sep + pass; });
+
+  var text = results.join('\n');
+  showResult('addpass', text);
+  results.forEach(function(r){ addToDB(r, 'combo'); });
+  toast('🔑 ' + results.length + ' combinações criadas!');
+}
+
+document.querySelectorAll('.pills').forEach(function(group){
+  group.addEventListener('click', function(e){
+    var pill = e.target.closest('.pill');
+    if (!pill) return;
+    group.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+    pill.classList.add('active');
+  });
+});
+
+function clearDB() {
+  db = [];
+  sessionCount = 0;
+  saveDB();
+  updateStats();
+  toast('🗑️ Banco limpo!');
+}
+
+function exportDB() {
+  if (db.length === 0) { toast('⚠️ Banco vazio'); return; }
+  var text = db.map(function(r){ return r.data; }).join('\n');
+  var blob = new Blob([text], {type: 'text/plain'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'bklogins_export_' + new Date().toISOString().slice(0,10) + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 Exportado!');
+}
+
+function copyDB() {
+  if (db.length === 0) { toast('⚠️ Banco vazio'); return; }
+  var text = db.map(function(r){ return r.data; }).join('\n');
+  copyToClipboard(text);
+}
+
+updateStats();
+</script>
+
+</body>
+</html>
